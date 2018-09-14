@@ -791,7 +791,7 @@ margin-bottom: 20px;
 };
             defs.PlaceAddress = {
   "type" : "object",
-  "required" : [ "country", "postalCode" ],
+  "required" : [ "country", "names", "postalCode" ],
   "properties" : {
     "country" : {
       "type" : "string",
@@ -883,7 +883,7 @@ margin-bottom: 20px;
 };
             defs.Vehicle = {
   "type" : "object",
-  "required" : [ "cargoSpace", "id", "registrationNumber", "vin" ],
+  "required" : [ "cargoSpace", "companyId", "id", "registrationNumber", "vin" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -964,7 +964,7 @@ margin-bottom: 20px;
     }
   }
 };
-            defs.VehicleAvailabilities = {
+            defs.VehiclePlaceAvailabilities = {
   "type" : "object",
   "required" : [ "items", "page", "pageCount", "pageSize", "totalItems" ],
   "properties" : {
@@ -995,21 +995,99 @@ margin-bottom: 20px;
     "items" : {
       "type" : "array",
       "items" : {
-        "$ref" : "#/definitions/VehicleAvailability"
+        "$ref" : "#/definitions/VehiclePlaceAvailability"
       },
       "minItems" : 1
     }
   },
-  "description" : "List of vehicles. To avoid sending large requests, pagination is requided."
+  "description" : "List of vehicle place availabilities. To avoid sending large requests, pagination is requided."
 };
-            defs.VehicleAvailability = {
+            defs.VehiclePlaceAvailability = {
+  "type" : "object",
+  "required" : [ "id", "place", "vehicleId" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "example" : "219d75bd-f143-43f7-b7ba-aeb82205d123",
+      "description" : "Vehicle place availability record ID"
+    },
+    "vehicleId" : {
+      "type" : "string",
+      "example" : "DIS_30",
+      "description" : "Vehicle ID from DFF system"
+    },
+    "place" : {
+      "$ref" : "#/definitions/AvailabilityPlace"
+    },
+    "description" : {
+      "type" : "string",
+      "example" : "Empty mega in Vienna",
+      "description" : "Offer description"
+    },
+    "prefferedCountries" : {
+      "type" : "array",
+      "example" : [ "DE", "CZ", "SK" ],
+      "description" : "Ordered list of preffered countries of the next destination",
+      "items" : {
+        "type" : "string",
+        "description" : "Two character country code"
+      }
+    },
+    "isPartialLoadAvailable" : {
+      "type" : "boolean",
+      "example" : false,
+      "description" : "It is possible to transfer load with the load already in truck",
+      "default" : false
+    }
+  },
+  "description" : "Vehicle place availability information"
+};
+            defs.VehicleRouteAvailabilities = {
+  "type" : "object",
+  "required" : [ "items", "page", "pageCount", "pageSize", "totalItems" ],
+  "properties" : {
+    "pageSize" : {
+      "type" : "integer",
+      "example" : 20,
+      "description" : "Count of items in each page",
+      "minimum" : 1
+    },
+    "page" : {
+      "type" : "integer",
+      "example" : 1,
+      "description" : "Current page number",
+      "minimum" : 1
+    },
+    "pageCount" : {
+      "type" : "integer",
+      "example" : 1,
+      "description" : "Count of all pages",
+      "minimum" : 1
+    },
+    "totalItems" : {
+      "type" : "integer",
+      "example" : 20,
+      "description" : "Count of total items in all pages",
+      "minimum" : 1
+    },
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/VehicleRouteAvailability"
+      },
+      "minItems" : 1
+    }
+  },
+  "description" : "List of vehicle route availabilities. To avoid sending large requests, pagination is requided."
+};
+            defs.VehicleRouteAvailability = {
   "type" : "object",
   "required" : [ "id", "loading", "unloading", "vehicleId" ],
   "properties" : {
     "id" : {
       "type" : "string",
       "example" : "219d75bd-f143-43f7-b7ba-aeb82205d856",
-      "description" : "Vehicle availability record ID"
+      "description" : "Vehicle route availability record ID"
     },
     "vehicleId" : {
       "type" : "string",
@@ -1024,11 +1102,11 @@ margin-bottom: 20px;
     },
     "description" : {
       "type" : "string",
-      "example" : "Transport of wooden brickets",
+      "example" : "Empty mega from A to B",
       "description" : "Offer description"
     },
     "price" : {
-      "$ref" : "#/definitions/VehicleAvailability_price"
+      "$ref" : "#/definitions/VehicleRouteAvailability_price"
     },
     "isPartialLoadAvailable" : {
       "type" : "boolean",
@@ -1037,9 +1115,9 @@ margin-bottom: 20px;
       "default" : false
     }
   },
-  "description" : "Vehicle availability information"
+  "description" : "Vehicle route availability information"
 };
-            defs.VehicleAvailability_price = {
+            defs.VehicleRouteAvailability_price = {
   "properties" : {
     "amount" : {
       "type" : "number",
@@ -1155,26 +1233,30 @@ margin-bottom: 20px;
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                   <li class="nav-header" data-group="Companies"><a href="#api-Companies">API Methods - Companies</a></li>
+                    <li data-group="Companies" data-name="deleteCompany" class="">
+                      <a href="#api-Companies-deleteCompany">deleteCompany</a>
+                    </li>
                     <li data-group="Companies" data-name="postCompanies" class="">
                       <a href="#api-Companies-postCompanies">postCompanies</a>
                     </li>
-                  <li class="nav-header" data-group="Company"><a href="#api-Company">API Methods - Company</a></li>
-                    <li data-group="Company" data-name="deleteCompany" class="">
-                      <a href="#api-Company-deleteCompany">deleteCompany</a>
+                  <li class="nav-header" data-group="VehiclePlaceAvailabilities"><a href="#api-VehiclePlaceAvailabilities">API Methods - VehiclePlaceAvailabilities</a></li>
+                    <li data-group="VehiclePlaceAvailabilities" data-name="deleteVehiclePlaceAvailability" class="">
+                      <a href="#api-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability">deleteVehiclePlaceAvailability</a>
                     </li>
-                  <li class="nav-header" data-group="Vehicle"><a href="#api-Vehicle">API Methods - Vehicle</a></li>
-                    <li data-group="Vehicle" data-name="deleteVehicle" class="">
-                      <a href="#api-Vehicle-deleteVehicle">deleteVehicle</a>
+                    <li data-group="VehiclePlaceAvailabilities" data-name="postVehiclePlaceAvailabilities" class="">
+                      <a href="#api-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities">postVehiclePlaceAvailabilities</a>
                     </li>
-                  <li class="nav-header" data-group="VehicleAvailabilities"><a href="#api-VehicleAvailabilities">API Methods - VehicleAvailabilities</a></li>
-                    <li data-group="VehicleAvailabilities" data-name="postVehicleAvailabilities" class="">
-                      <a href="#api-VehicleAvailabilities-postVehicleAvailabilities">postVehicleAvailabilities</a>
+                  <li class="nav-header" data-group="VehicleRouteAvailabilities"><a href="#api-VehicleRouteAvailabilities">API Methods - VehicleRouteAvailabilities</a></li>
+                    <li data-group="VehicleRouteAvailabilities" data-name="deleteVehicleRouteAvailability" class="">
+                      <a href="#api-VehicleRouteAvailabilities-deleteVehicleRouteAvailability">deleteVehicleRouteAvailability</a>
                     </li>
-                  <li class="nav-header" data-group="VehicleAvailability"><a href="#api-VehicleAvailability">API Methods - VehicleAvailability</a></li>
-                    <li data-group="VehicleAvailability" data-name="deleteVehicleAvailability" class="">
-                      <a href="#api-VehicleAvailability-deleteVehicleAvailability">deleteVehicleAvailability</a>
+                    <li data-group="VehicleRouteAvailabilities" data-name="postVehicleRouteAvailabilities" class="">
+                      <a href="#api-VehicleRouteAvailabilities-postVehicleRouteAvailabilities">postVehicleRouteAvailabilities</a>
                     </li>
                   <li class="nav-header" data-group="Vehicles"><a href="#api-Vehicles">API Methods - Vehicles</a></li>
+                    <li data-group="Vehicles" data-name="deleteVehicle" class="">
+                      <a href="#api-Vehicles-deleteVehicle">deleteVehicle</a>
+                    </li>
                     <li data-group="Vehicles" data-name="postVehicles" class="">
                       <a href="#api-Vehicles-postVehicles">postVehicles</a>
                     </li>
@@ -1193,7 +1275,7 @@ margin-bottom: 20px;
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
               <div class="app-desc">Version: 1.0.0</div>
             <hr>
-            <div><p>This is an integration API between Eurowag Digital Freight Forwarding system and external freight forwarding systems for synchronizing vehicle metadata and their availability with freight exchange systems.</p>
+            <div><p>This is an integration API between Eurowag Digital Freight Forwarding system (DFF) and external freight exchange systems (FX) for synchronizing vehicle metadata and their availability with freight exchange systems.</p>
 <hr />
 <p><strong>Endpoints should be implemented on the side of freight exchange.</strong></p>
 </div>
@@ -1202,6 +1284,407 @@ margin-bottom: 20px;
         <div id="sections">
                 <section id="api-Companies">
                   <h1>Companies</h1>
+                    <div id="api-Companies-deleteCompany">
+                      <article id="api-Companies-deleteCompany-0" data-group="User" data-name="deleteCompany" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteCompany</h1>
+                          <p>Deletes a company from freight exchange</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This method should be used by DFF system, when the company is no longer active.</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/companies/{companyId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Companies-deleteCompany-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Companies-deleteCompany-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Companies-deleteCompany-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Companies-deleteCompany-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Companies-deleteCompany-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/companies/{companyId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Companies-deleteCompany-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CompaniesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CompaniesApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        
+        // Configure API key authorization: api_key
+        ApiKeyAuth api_key = (ApiKeyAuth) defaultClient.getAuthentication("api_key");
+        api_key.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //api_key.setApiKeyPrefix("Token");
+
+        CompaniesApi apiInstance = new CompaniesApi();
+        String apiKey = apiKey_example; // String | API key provided by EuroWag
+        String companyId = companyId_example; // String | Company id to delete
+        try {
+            apiInstance.deleteCompany(apiKey, companyId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CompaniesApi#deleteCompany");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Companies-deleteCompany-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CompaniesApi;
+
+public class CompaniesApiExample {
+
+    public static void main(String[] args) {
+        CompaniesApi apiInstance = new CompaniesApi();
+        String apiKey = apiKey_example; // String | API key provided by EuroWag
+        String companyId = companyId_example; // String | Company id to delete
+        try {
+            apiInstance.deleteCompany(apiKey, companyId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CompaniesApi#deleteCompany");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Companies-deleteCompany-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Companies-deleteCompany-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+
+// Configure API key authorization: (authentication scheme: api_key)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"api_key"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
+
+String *apiKey = apiKey_example; // API key provided by EuroWag
+String *companyId = companyId_example; // Company id to delete
+
+CompaniesApi *apiInstance = [[CompaniesApi alloc] init];
+
+// Deletes a company from freight exchange
+[apiInstance deleteCompanyWith:apiKey
+    companyId:companyId
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Companies-deleteCompany-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
+var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
+
+// Configure API key authorization: api_key
+var api_key = defaultClient.authentications['api_key'];
+api_key.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//api_key.apiKeyPrefix['api_key'] = "Token"
+
+var api = new EuroWagDffFreightExchangePushApi.CompaniesApi()
+
+var apiKey = apiKey_example; // {String} API key provided by EuroWag
+
+var companyId = companyId_example; // {String} Company id to delete
+
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.deleteCompany(apiKey, companyId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Companies-deleteCompany-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Companies-deleteCompany-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class deleteCompanyExample
+    {
+        public void main()
+        {
+            
+            // Configure API key authorization: api_key
+            Configuration.Default.ApiKey.Add("api_key", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
+
+            var apiInstance = new CompaniesApi();
+            var apiKey = apiKey_example;  // String | API key provided by EuroWag
+            var companyId = companyId_example;  // String | Company id to delete
+
+            try
+            {
+                // Deletes a company from freight exchange
+                apiInstance.deleteCompany(apiKey, companyId);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CompaniesApi.deleteCompany: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Companies-deleteCompany-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: api_key
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
+
+$api_instance = new Swagger\Client\Api\CompaniesApi();
+$apiKey = apiKey_example; // String | API key provided by EuroWag
+$companyId = companyId_example; // String | Company id to delete
+
+try {
+    $api_instance->deleteCompany($apiKey, $companyId);
+} catch (Exception $e) {
+    echo 'Exception when calling CompaniesApi->deleteCompany: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Companies-deleteCompany-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CompaniesApi;
+
+# Configure API key authorization: api_key
+$WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CompaniesApi->new();
+my $apiKey = apiKey_example; # String | API key provided by EuroWag
+my $companyId = companyId_example; # String | Company id to delete
+
+eval { 
+    $api_instance->deleteCompany(apiKey => $apiKey, companyId => $companyId);
+};
+if ($@) {
+    warn "Exception when calling CompaniesApi->deleteCompany: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Companies-deleteCompany-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: api_key
+swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CompaniesApi()
+apiKey = apiKey_example # String | API key provided by EuroWag
+companyId = companyId_example # String | Company id to delete
+
+try: 
+    # Deletes a company from freight exchange
+    api_instance.delete_company(apiKey, companyId)
+except ApiException as e:
+    print("Exception when calling CompaniesApi->deleteCompany: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">companyId*</td>
+<td>
+
+
+    <div id="d2e199_deleteCompany_companyId">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        Company id to delete
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">api_key*</td>
+<td>
+
+
+    <div id="d2e199_deleteCompany_apiKey">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        API key provided by EuroWag
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Successfully deleted </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Invalid ID supplied </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 401 - Client unauthorized </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 403 - Access forbidden </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 - Entity not found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 405 - Invalid input </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 415 - Unsupported media type </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 429 - Too many requests </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal server error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 503 - Service unavailable due to a maintenance </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Companies-postCompanies">
                       <article id="api-Companies-postCompanies-0" data-group="User" data-name="postCompanies" data-version="0">
                         <div class="pull-left">
@@ -1211,7 +1694,7 @@ margin-bottom: 20px;
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">This method should be used by DFF system to provide transport companies to freight exchange customers. There is no need to send the whole list everytime when company changes. Existing companies should be updated and new companies should be added. Companies deleted before should be added again.</p>
+                        <p class="marked">This method should be used by DFF system to provide transport companies to freight exchange customers. There is no need to send the whole list everytime when a company changes. Existing companies should be updated and new companies should be added. Companies deleted before should be added again.</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/companies</span></code></pre>
@@ -1600,52 +2083,52 @@ $(document).ready(function() {
                       </div>
                       <hr>
                   </section>
-                <section id="api-Company">
-                  <h1>Company</h1>
-                    <div id="api-Company-deleteCompany">
-                      <article id="api-Company-deleteCompany-0" data-group="User" data-name="deleteCompany" data-version="0">
+                <section id="api-VehiclePlaceAvailabilities">
+                  <h1>VehiclePlaceAvailabilities</h1>
+                    <div id="api-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability">
+                      <article id="api-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0" data-group="User" data-name="deleteVehiclePlaceAvailability" data-version="0">
                         <div class="pull-left">
-                          <h1>deleteCompany</h1>
-                          <p>Deletes a company from freight exchange</p>
+                          <h1>deleteVehiclePlaceAvailability</h1>
+                          <p>Deletes a vehicle place availability record</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">This method should be used by DFF system, when the company is no longer active.</p>
+                        <p class="marked">This method should be used by DFF system, when the place availability is no longer active.</p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/company/{companyId}</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/vehicle-place-availabilities/{vehiclePlaceAvailabilityId}</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Company-deleteCompany-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Company-deleteCompany-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Company-deleteCompany-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Company-deleteCompany-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Company-deleteCompany-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Company-deleteCompany-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Company-deleteCompany-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Company-deleteCompany-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Company-deleteCompany-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Company-deleteCompany-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Company-deleteCompany-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-java">Java</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Company-deleteCompany-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/company/{companyId}"</code></pre>
+                          <div class="tab-pane active" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle-place-availabilities/{vehiclePlaceAvailabilityId}"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Company-deleteCompany-0-java">
+                          <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
-import io.swagger.client.api.CompanyApi;
+import io.swagger.client.api.VehiclePlaceAvailabilitiesApi;
 
 import java.io.File;
 import java.util.*;
 
-public class CompanyApiExample {
+public class VehiclePlaceAvailabilitiesApiExample {
 
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
@@ -1656,42 +2139,42 @@ public class CompanyApiExample {
         // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
         //api_key.setApiKeyPrefix("Token");
 
-        CompanyApi apiInstance = new CompanyApi();
-        String apiKey = apiKey_example; // String | API key provided by EuroWag
-        String companyId = companyId_example; // String | Company id to delete
+        VehiclePlaceAvailabilitiesApi apiInstance = new VehiclePlaceAvailabilitiesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        String vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example; // String | Vehicle place availability id to delete
         try {
-            apiInstance.deleteCompany(apiKey, companyId);
+            apiInstance.deleteVehiclePlaceAvailability(apiKey, vehiclePlaceAvailabilityId);
         } catch (ApiException e) {
-            System.err.println("Exception when calling CompanyApi#deleteCompany");
+            System.err.println("Exception when calling VehiclePlaceAvailabilitiesApi#deleteVehiclePlaceAvailability");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Company-deleteCompany-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CompanyApi;
+                          <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehiclePlaceAvailabilitiesApi;
 
-public class CompanyApiExample {
+public class VehiclePlaceAvailabilitiesApiExample {
 
     public static void main(String[] args) {
-        CompanyApi apiInstance = new CompanyApi();
-        String apiKey = apiKey_example; // String | API key provided by EuroWag
-        String companyId = companyId_example; // String | Company id to delete
+        VehiclePlaceAvailabilitiesApi apiInstance = new VehiclePlaceAvailabilitiesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        String vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example; // String | Vehicle place availability id to delete
         try {
-            apiInstance.deleteCompany(apiKey, companyId);
+            apiInstance.deleteVehiclePlaceAvailability(apiKey, vehiclePlaceAvailabilityId);
         } catch (ApiException e) {
-            System.err.println("Exception when calling CompanyApi#deleteCompany");
+            System.err.println("Exception when calling VehiclePlaceAvailabilitiesApi#deleteVehiclePlaceAvailability");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Company-deleteCompany-0-groovy">
+  <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Company-deleteCompany-0-objc">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
 
 // Configure API key authorization: (authentication scheme: api_key)
@@ -1699,14 +2182,14 @@ public class CompanyApiExample {
 // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
 
-String *apiKey = apiKey_example; // API key provided by EuroWag
-String *companyId = companyId_example; // Company id to delete
+String *apiKey = apiKey_example; // API key provided by freight exchange
+String *vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example; // Vehicle place availability id to delete
 
-CompanyApi *apiInstance = [[CompanyApi alloc] init];
+VehiclePlaceAvailabilitiesApi *apiInstance = [[VehiclePlaceAvailabilitiesApi alloc] init];
 
-// Deletes a company from freight exchange
-[apiInstance deleteCompanyWith:apiKey
-    companyId:companyId
+// Deletes a vehicle place availability record
+[apiInstance deleteVehiclePlaceAvailabilityWith:apiKey
+    vehiclePlaceAvailabilityId:vehiclePlaceAvailabilityId
               completionHandler: ^(NSError* error) {
                             if (error) {
                                 NSLog(@"Error: %@", error);
@@ -1715,7 +2198,7 @@ CompanyApi *apiInstance = [[CompanyApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Company-deleteCompany-0-javascript">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
 var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
 
@@ -1725,11 +2208,11 @@ api_key.apiKey = "YOUR API KEY"
 // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
 //api_key.apiKeyPrefix['api_key'] = "Token"
 
-var api = new EuroWagDffFreightExchangePushApi.CompanyApi()
+var api = new EuroWagDffFreightExchangePushApi.VehiclePlaceAvailabilitiesApi()
 
-var apiKey = apiKey_example; // {String} API key provided by EuroWag
+var apiKey = apiKey_example; // {String} API key provided by freight exchange
 
-var companyId = companyId_example; // {String} Company id to delete
+var vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example; // {String} Vehicle place availability id to delete
 
 
 var callback = function(error, data, response) {
@@ -1739,14 +2222,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully.');
   }
 };
-api.deleteCompany(apiKey, companyId, callback);
+api.deleteVehiclePlaceAvailability(apiKey, vehiclePlaceAvailabilityId, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Company-deleteCompany-0-angular">
+                            <!--<div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Company-deleteCompany-0-csharp">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -1755,7 +2238,7 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class deleteCompanyExample
+    public class deleteVehiclePlaceAvailabilityExample
     {
         public void main()
         {
@@ -1765,18 +2248,18 @@ namespace Example
             // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
             // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
 
-            var apiInstance = new CompanyApi();
-            var apiKey = apiKey_example;  // String | API key provided by EuroWag
-            var companyId = companyId_example;  // String | Company id to delete
+            var apiInstance = new VehiclePlaceAvailabilitiesApi();
+            var apiKey = apiKey_example;  // String | API key provided by freight exchange
+            var vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example;  // String | Vehicle place availability id to delete
 
             try
             {
-                // Deletes a company from freight exchange
-                apiInstance.deleteCompany(apiKey, companyId);
+                // Deletes a vehicle place availability record
+                apiInstance.deleteVehiclePlaceAvailability(apiKey, vehiclePlaceAvailabilityId);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling CompanyApi.deleteCompany: " + e.Message );
+                Debug.Print("Exception when calling VehiclePlaceAvailabilitiesApi.deleteVehiclePlaceAvailability: " + e.Message );
             }
         }
     }
@@ -1784,7 +2267,7 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Company-deleteCompany-0-php">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -1793,41 +2276,41 @@ Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'Y
 // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 // Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
 
-$api_instance = new Swagger\Client\Api\CompanyApi();
-$apiKey = apiKey_example; // String | API key provided by EuroWag
-$companyId = companyId_example; // String | Company id to delete
+$api_instance = new Swagger\Client\Api\VehiclePlaceAvailabilitiesApi();
+$apiKey = apiKey_example; // String | API key provided by freight exchange
+$vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example; // String | Vehicle place availability id to delete
 
 try {
-    $api_instance->deleteCompany($apiKey, $companyId);
+    $api_instance->deleteVehiclePlaceAvailability($apiKey, $vehiclePlaceAvailabilityId);
 } catch (Exception $e) {
-    echo 'Exception when calling CompanyApi->deleteCompany: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling VehiclePlaceAvailabilitiesApi->deleteVehiclePlaceAvailability: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Company-deleteCompany-0-perl">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::CompanyApi;
+use WWW::SwaggerClient::VehiclePlaceAvailabilitiesApi;
 
 # Configure API key authorization: api_key
 $WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
 # uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 #$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
 
-my $api_instance = WWW::SwaggerClient::CompanyApi->new();
-my $apiKey = apiKey_example; # String | API key provided by EuroWag
-my $companyId = companyId_example; # String | Company id to delete
+my $api_instance = WWW::SwaggerClient::VehiclePlaceAvailabilitiesApi->new();
+my $apiKey = apiKey_example; # String | API key provided by freight exchange
+my $vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example; # String | Vehicle place availability id to delete
 
 eval { 
-    $api_instance->deleteCompany(apiKey => $apiKey, companyId => $companyId);
+    $api_instance->deleteVehiclePlaceAvailability(apiKey => $apiKey, vehiclePlaceAvailabilityId => $vehiclePlaceAvailabilityId);
 };
 if ($@) {
-    warn "Exception when calling CompanyApi->deleteCompany: $@\n";
+    warn "Exception when calling VehiclePlaceAvailabilitiesApi->deleteVehiclePlaceAvailability: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Company-deleteCompany-0-python">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-deleteVehiclePlaceAvailability-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -1840,15 +2323,15 @@ swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
 # swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
 
 # create an instance of the API class
-api_instance = swagger_client.CompanyApi()
-apiKey = apiKey_example # String | API key provided by EuroWag
-companyId = companyId_example # String | Company id to delete
+api_instance = swagger_client.VehiclePlaceAvailabilitiesApi()
+apiKey = apiKey_example # String | API key provided by freight exchange
+vehiclePlaceAvailabilityId = vehiclePlaceAvailabilityId_example # String | Vehicle place availability id to delete
 
 try: 
-    # Deletes a company from freight exchange
-    api_instance.delete_company(apiKey, companyId)
+    # Deletes a vehicle place availability record
+    api_instance.delete_vehicle_place_availability(apiKey, vehiclePlaceAvailabilityId)
 except ApiException as e:
-    print("Exception when calling CompanyApi->deleteCompany: %s\n" % e)</code></pre>
+    print("Exception when calling VehiclePlaceAvailabilitiesApi->deleteVehiclePlaceAvailability: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
@@ -1860,11 +2343,11 @@ except ApiException as e:
                                   <th width="150px">Name</th>
                                   <th>Description</th>
                                 </tr>
-                                  <tr><td style="width:150px;">companyId*</td>
+                                  <tr><td style="width:150px;">vehiclePlaceAvailabilityId*</td>
 <td>
 
 
-    <div id="d2e199_deleteCompany_companyId">
+    <div id="d2e199_deleteVehiclePlaceAvailability_vehiclePlaceAvailabilityId">
         <div class="json-schema-view">
             <div class="primitive">
                 <span class="type">
@@ -1872,7 +2355,7 @@ except ApiException as e:
                 </span>
 
                     <div class="inner description">
-                        Company id to delete
+                        Vehicle place availability id to delete
                     </div>
             </div>
                 <div class="inner required">
@@ -1895,7 +2378,7 @@ except ApiException as e:
 <td>
 
 
-    <div id="d2e199_deleteCompany_apiKey">
+    <div id="d2e199_deleteVehiclePlaceAvailability_apiKey">
         <div class="json-schema-view">
             <div class="primitive">
                 <span class="type">
@@ -1903,7 +2386,7 @@ except ApiException as e:
                 </span>
 
                     <div class="inner description">
-                        API key provided by EuroWag
+                        API key provided by freight exchange
                     </div>
             </div>
                 <div class="inner required">
@@ -2003,53 +2486,50 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
-                  </section>
-                <section id="api-Vehicle">
-                  <h1>Vehicle</h1>
-                    <div id="api-Vehicle-deleteVehicle">
-                      <article id="api-Vehicle-deleteVehicle-0" data-group="User" data-name="deleteVehicle" data-version="0">
+                    <div id="api-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities">
+                      <article id="api-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0" data-group="User" data-name="postVehiclePlaceAvailabilities" data-version="0">
                         <div class="pull-left">
-                          <h1>deleteVehicle</h1>
-                          <p>Deletes a vehicle</p>
+                          <h1>postVehiclePlaceAvailabilities</h1>
+                          <p>Send availability of vehicles in specific place without specific route</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">This method should be used by DFF system, when the vehicle is no longer used.</p>
+                        <p class="marked">This method should be used by DFF system to provide availability times and places of vehicles for freight exchange processing. Every change of vehicle&#x60;s availability times and/or places is pushed using this interface. There is no need to send the whole list everytime when an availability changes. Existing availabilities should be updated and new availabilities should be added. Availabilities deleted before should be added again.</p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/vehicle/{vehicleId}</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/vehicle-place-availabilities</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Vehicle-deleteVehicle-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Vehicle-deleteVehicle-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Vehicle-deleteVehicle-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Vehicle-deleteVehicle-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-java">Java</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Vehicle-deleteVehicle-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle/{vehicleId}"</code></pre>
+                          <div class="tab-pane active" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle-place-availabilities"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-java">
+                          <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
-import io.swagger.client.api.VehicleApi;
+import io.swagger.client.api.VehiclePlaceAvailabilitiesApi;
 
 import java.io.File;
 import java.util.*;
 
-public class VehicleApiExample {
+public class VehiclePlaceAvailabilitiesApiExample {
 
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
@@ -2060,42 +2540,1243 @@ public class VehicleApiExample {
         // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
         //api_key.setApiKeyPrefix("Token");
 
-        VehicleApi apiInstance = new VehicleApi();
+        VehiclePlaceAvailabilitiesApi apiInstance = new VehiclePlaceAvailabilitiesApi();
         String apiKey = apiKey_example; // String | API key provided by freight exchange
-        String vehicleId = vehicleId_example; // String | Vehicle id to delete
+        VehiclePlaceAvailabilities body = ; // VehiclePlaceAvailabilities | List of vehicle place availability objects that needs to be sent to freight exchange
         try {
-            apiInstance.deleteVehicle(apiKey, vehicleId);
+            apiInstance.postVehiclePlaceAvailabilities(apiKey, body);
         } catch (ApiException e) {
-            System.err.println("Exception when calling VehicleApi#deleteVehicle");
+            System.err.println("Exception when calling VehiclePlaceAvailabilitiesApi#postVehiclePlaceAvailabilities");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehicleApi;
+                          <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehiclePlaceAvailabilitiesApi;
 
-public class VehicleApiExample {
+public class VehiclePlaceAvailabilitiesApiExample {
 
     public static void main(String[] args) {
-        VehicleApi apiInstance = new VehicleApi();
+        VehiclePlaceAvailabilitiesApi apiInstance = new VehiclePlaceAvailabilitiesApi();
         String apiKey = apiKey_example; // String | API key provided by freight exchange
-        String vehicleId = vehicleId_example; // String | Vehicle id to delete
+        VehiclePlaceAvailabilities body = ; // VehiclePlaceAvailabilities | List of vehicle place availability objects that needs to be sent to freight exchange
         try {
-            apiInstance.deleteVehicle(apiKey, vehicleId);
+            apiInstance.postVehiclePlaceAvailabilities(apiKey, body);
         } catch (ApiException e) {
-            System.err.println("Exception when calling VehicleApi#deleteVehicle");
+            System.err.println("Exception when calling VehiclePlaceAvailabilitiesApi#postVehiclePlaceAvailabilities");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-groovy">
+  <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-objc">
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+
+// Configure API key authorization: (authentication scheme: api_key)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"api_key"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
+
+String *apiKey = apiKey_example; // API key provided by freight exchange
+VehiclePlaceAvailabilities *body = ; // List of vehicle place availability objects that needs to be sent to freight exchange
+
+VehiclePlaceAvailabilitiesApi *apiInstance = [[VehiclePlaceAvailabilitiesApi alloc] init];
+
+// Send availability of vehicles in specific place without specific route
+[apiInstance postVehiclePlaceAvailabilitiesWith:apiKey
+    body:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
+var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
+
+// Configure API key authorization: api_key
+var api_key = defaultClient.authentications['api_key'];
+api_key.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//api_key.apiKeyPrefix['api_key'] = "Token"
+
+var api = new EuroWagDffFreightExchangePushApi.VehiclePlaceAvailabilitiesApi()
+
+var apiKey = apiKey_example; // {String} API key provided by freight exchange
+
+var body = ; // {VehiclePlaceAvailabilities} List of vehicle place availability objects that needs to be sent to freight exchange
+
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.postVehiclePlaceAvailabilities(apiKey, body, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class postVehiclePlaceAvailabilitiesExample
+    {
+        public void main()
+        {
+            
+            // Configure API key authorization: api_key
+            Configuration.Default.ApiKey.Add("api_key", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
+
+            var apiInstance = new VehiclePlaceAvailabilitiesApi();
+            var apiKey = apiKey_example;  // String | API key provided by freight exchange
+            var body = new VehiclePlaceAvailabilities(); // VehiclePlaceAvailabilities | List of vehicle place availability objects that needs to be sent to freight exchange
+
+            try
+            {
+                // Send availability of vehicles in specific place without specific route
+                apiInstance.postVehiclePlaceAvailabilities(apiKey, body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling VehiclePlaceAvailabilitiesApi.postVehiclePlaceAvailabilities: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: api_key
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
+
+$api_instance = new Swagger\Client\Api\VehiclePlaceAvailabilitiesApi();
+$apiKey = apiKey_example; // String | API key provided by freight exchange
+$body = ; // VehiclePlaceAvailabilities | List of vehicle place availability objects that needs to be sent to freight exchange
+
+try {
+    $api_instance->postVehiclePlaceAvailabilities($apiKey, $body);
+} catch (Exception $e) {
+    echo 'Exception when calling VehiclePlaceAvailabilitiesApi->postVehiclePlaceAvailabilities: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::VehiclePlaceAvailabilitiesApi;
+
+# Configure API key authorization: api_key
+$WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::VehiclePlaceAvailabilitiesApi->new();
+my $apiKey = apiKey_example; # String | API key provided by freight exchange
+my $body = WWW::SwaggerClient::Object::VehiclePlaceAvailabilities->new(); # VehiclePlaceAvailabilities | List of vehicle place availability objects that needs to be sent to freight exchange
+
+eval { 
+    $api_instance->postVehiclePlaceAvailabilities(apiKey => $apiKey, body => $body);
+};
+if ($@) {
+    warn "Exception when calling VehiclePlaceAvailabilitiesApi->postVehiclePlaceAvailabilities: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehiclePlaceAvailabilities-postVehiclePlaceAvailabilities-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: api_key
+swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.VehiclePlaceAvailabilitiesApi()
+apiKey = apiKey_example # String | API key provided by freight exchange
+body =  # VehiclePlaceAvailabilities | List of vehicle place availability objects that needs to be sent to freight exchange
+
+try: 
+    # Send availability of vehicles in specific place without specific route
+    api_instance.post_vehicle_place_availabilities(apiKey, body)
+except ApiException as e:
+    print("Exception when calling VehiclePlaceAvailabilitiesApi->postVehiclePlaceAvailabilities: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">api_key*</td>
+<td>
+
+
+    <div id="d2e199_postVehiclePlaceAvailabilities_apiKey">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        API key provided by freight exchange
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
+<td>
+
+
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "in" : "body",
+  "name" : "body",
+  "description" : "List of vehicle place availability objects that needs to be sent to freight exchange",
+  "required" : true,
+  "schema" : {
+    "$ref" : "#/definitions/VehiclePlaceAvailabilities"
+  }
+};
+  var schema = schemaWrapper.schema;
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_postVehiclePlaceAvailabilities_body');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_postVehiclePlaceAvailabilities_body"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Successfully sent </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 401 - Client unauthorized </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 403 - Access forbidden </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 405 - Invalid input </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 415 - Unsupported media type </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 429 - Too many requests </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal server error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 503 - Service unavailable due to a maintenance </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-VehicleRouteAvailabilities">
+                  <h1>VehicleRouteAvailabilities</h1>
+                    <div id="api-VehicleRouteAvailabilities-deleteVehicleRouteAvailability">
+                      <article id="api-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0" data-group="User" data-name="deleteVehicleRouteAvailability" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteVehicleRouteAvailability</h1>
+                          <p>Deletes a vehicle route availability record</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This method should be used by DFF system, when the route availability is no longer active.</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/vehicle-route-availabilities/{vehicleRouteAvailabilityId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-java">Java</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle-route-availabilities/{vehicleRouteAvailabilityId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.VehicleRouteAvailabilitiesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class VehicleRouteAvailabilitiesApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        
+        // Configure API key authorization: api_key
+        ApiKeyAuth api_key = (ApiKeyAuth) defaultClient.getAuthentication("api_key");
+        api_key.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //api_key.setApiKeyPrefix("Token");
+
+        VehicleRouteAvailabilitiesApi apiInstance = new VehicleRouteAvailabilitiesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        String vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example; // String | Vehicle route availability id to delete
+        try {
+            apiInstance.deleteVehicleRouteAvailability(apiKey, vehicleRouteAvailabilityId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehicleRouteAvailabilitiesApi#deleteVehicleRouteAvailability");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehicleRouteAvailabilitiesApi;
+
+public class VehicleRouteAvailabilitiesApiExample {
+
+    public static void main(String[] args) {
+        VehicleRouteAvailabilitiesApi apiInstance = new VehicleRouteAvailabilitiesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        String vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example; // String | Vehicle route availability id to delete
+        try {
+            apiInstance.deleteVehicleRouteAvailability(apiKey, vehicleRouteAvailabilityId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehicleRouteAvailabilitiesApi#deleteVehicleRouteAvailability");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+
+// Configure API key authorization: (authentication scheme: api_key)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"api_key"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
+
+String *apiKey = apiKey_example; // API key provided by freight exchange
+String *vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example; // Vehicle route availability id to delete
+
+VehicleRouteAvailabilitiesApi *apiInstance = [[VehicleRouteAvailabilitiesApi alloc] init];
+
+// Deletes a vehicle route availability record
+[apiInstance deleteVehicleRouteAvailabilityWith:apiKey
+    vehicleRouteAvailabilityId:vehicleRouteAvailabilityId
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
+var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
+
+// Configure API key authorization: api_key
+var api_key = defaultClient.authentications['api_key'];
+api_key.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//api_key.apiKeyPrefix['api_key'] = "Token"
+
+var api = new EuroWagDffFreightExchangePushApi.VehicleRouteAvailabilitiesApi()
+
+var apiKey = apiKey_example; // {String} API key provided by freight exchange
+
+var vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example; // {String} Vehicle route availability id to delete
+
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.deleteVehicleRouteAvailability(apiKey, vehicleRouteAvailabilityId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class deleteVehicleRouteAvailabilityExample
+    {
+        public void main()
+        {
+            
+            // Configure API key authorization: api_key
+            Configuration.Default.ApiKey.Add("api_key", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
+
+            var apiInstance = new VehicleRouteAvailabilitiesApi();
+            var apiKey = apiKey_example;  // String | API key provided by freight exchange
+            var vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example;  // String | Vehicle route availability id to delete
+
+            try
+            {
+                // Deletes a vehicle route availability record
+                apiInstance.deleteVehicleRouteAvailability(apiKey, vehicleRouteAvailabilityId);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling VehicleRouteAvailabilitiesApi.deleteVehicleRouteAvailability: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: api_key
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
+
+$api_instance = new Swagger\Client\Api\VehicleRouteAvailabilitiesApi();
+$apiKey = apiKey_example; // String | API key provided by freight exchange
+$vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example; // String | Vehicle route availability id to delete
+
+try {
+    $api_instance->deleteVehicleRouteAvailability($apiKey, $vehicleRouteAvailabilityId);
+} catch (Exception $e) {
+    echo 'Exception when calling VehicleRouteAvailabilitiesApi->deleteVehicleRouteAvailability: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::VehicleRouteAvailabilitiesApi;
+
+# Configure API key authorization: api_key
+$WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::VehicleRouteAvailabilitiesApi->new();
+my $apiKey = apiKey_example; # String | API key provided by freight exchange
+my $vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example; # String | Vehicle route availability id to delete
+
+eval { 
+    $api_instance->deleteVehicleRouteAvailability(apiKey => $apiKey, vehicleRouteAvailabilityId => $vehicleRouteAvailabilityId);
+};
+if ($@) {
+    warn "Exception when calling VehicleRouteAvailabilitiesApi->deleteVehicleRouteAvailability: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-deleteVehicleRouteAvailability-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: api_key
+swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.VehicleRouteAvailabilitiesApi()
+apiKey = apiKey_example # String | API key provided by freight exchange
+vehicleRouteAvailabilityId = vehicleRouteAvailabilityId_example # String | Vehicle route availability id to delete
+
+try: 
+    # Deletes a vehicle route availability record
+    api_instance.delete_vehicle_route_availability(apiKey, vehicleRouteAvailabilityId)
+except ApiException as e:
+    print("Exception when calling VehicleRouteAvailabilitiesApi->deleteVehicleRouteAvailability: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">vehicleRouteAvailabilityId*</td>
+<td>
+
+
+    <div id="d2e199_deleteVehicleRouteAvailability_vehicleRouteAvailabilityId">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        Vehicle route availability id to delete
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">api_key*</td>
+<td>
+
+
+    <div id="d2e199_deleteVehicleRouteAvailability_apiKey">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        API key provided by freight exchange
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Successfully deleted </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Invalid ID supplied </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 401 - Client unauthorized </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 403 - Access forbidden </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 - Entity not found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 405 - Invalid input </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 415 - Unsupported media type </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 429 - Too many requests </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal server error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 503 - Service unavailable due to a maintenance </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-VehicleRouteAvailabilities-postVehicleRouteAvailabilities">
+                      <article id="api-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0" data-group="User" data-name="postVehicleRouteAvailabilities" data-version="0">
+                        <div class="pull-left">
+                          <h1>postVehicleRouteAvailabilities</h1>
+                          <p>Send availability of vehicles on specific routes</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This method should be used by DFF system to provide availability times and places of vehicles for freight exchange processing. Every change of vehicle&#x60;s availability times and/or places is pushed using this interface. There is no need to send the whole list everytime when a route availability changes. Existing availabilities should be updated and new availabilities should be added. Availabilities deleted before should be added again.</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/vehicle-route-availabilities</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-java">Java</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle-route-availabilities"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.VehicleRouteAvailabilitiesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class VehicleRouteAvailabilitiesApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        
+        // Configure API key authorization: api_key
+        ApiKeyAuth api_key = (ApiKeyAuth) defaultClient.getAuthentication("api_key");
+        api_key.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //api_key.setApiKeyPrefix("Token");
+
+        VehicleRouteAvailabilitiesApi apiInstance = new VehicleRouteAvailabilitiesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        VehicleRouteAvailabilities body = ; // VehicleRouteAvailabilities | List of vehicle route availability objects that needs to be sent to freight exchange
+        try {
+            apiInstance.postVehicleRouteAvailabilities(apiKey, body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehicleRouteAvailabilitiesApi#postVehicleRouteAvailabilities");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehicleRouteAvailabilitiesApi;
+
+public class VehicleRouteAvailabilitiesApiExample {
+
+    public static void main(String[] args) {
+        VehicleRouteAvailabilitiesApi apiInstance = new VehicleRouteAvailabilitiesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        VehicleRouteAvailabilities body = ; // VehicleRouteAvailabilities | List of vehicle route availability objects that needs to be sent to freight exchange
+        try {
+            apiInstance.postVehicleRouteAvailabilities(apiKey, body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehicleRouteAvailabilitiesApi#postVehicleRouteAvailabilities");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+
+// Configure API key authorization: (authentication scheme: api_key)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"api_key"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
+
+String *apiKey = apiKey_example; // API key provided by freight exchange
+VehicleRouteAvailabilities *body = ; // List of vehicle route availability objects that needs to be sent to freight exchange
+
+VehicleRouteAvailabilitiesApi *apiInstance = [[VehicleRouteAvailabilitiesApi alloc] init];
+
+// Send availability of vehicles on specific routes
+[apiInstance postVehicleRouteAvailabilitiesWith:apiKey
+    body:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
+var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
+
+// Configure API key authorization: api_key
+var api_key = defaultClient.authentications['api_key'];
+api_key.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//api_key.apiKeyPrefix['api_key'] = "Token"
+
+var api = new EuroWagDffFreightExchangePushApi.VehicleRouteAvailabilitiesApi()
+
+var apiKey = apiKey_example; // {String} API key provided by freight exchange
+
+var body = ; // {VehicleRouteAvailabilities} List of vehicle route availability objects that needs to be sent to freight exchange
+
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.postVehicleRouteAvailabilities(apiKey, body, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class postVehicleRouteAvailabilitiesExample
+    {
+        public void main()
+        {
+            
+            // Configure API key authorization: api_key
+            Configuration.Default.ApiKey.Add("api_key", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
+
+            var apiInstance = new VehicleRouteAvailabilitiesApi();
+            var apiKey = apiKey_example;  // String | API key provided by freight exchange
+            var body = new VehicleRouteAvailabilities(); // VehicleRouteAvailabilities | List of vehicle route availability objects that needs to be sent to freight exchange
+
+            try
+            {
+                // Send availability of vehicles on specific routes
+                apiInstance.postVehicleRouteAvailabilities(apiKey, body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling VehicleRouteAvailabilitiesApi.postVehicleRouteAvailabilities: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: api_key
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
+
+$api_instance = new Swagger\Client\Api\VehicleRouteAvailabilitiesApi();
+$apiKey = apiKey_example; // String | API key provided by freight exchange
+$body = ; // VehicleRouteAvailabilities | List of vehicle route availability objects that needs to be sent to freight exchange
+
+try {
+    $api_instance->postVehicleRouteAvailabilities($apiKey, $body);
+} catch (Exception $e) {
+    echo 'Exception when calling VehicleRouteAvailabilitiesApi->postVehicleRouteAvailabilities: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::VehicleRouteAvailabilitiesApi;
+
+# Configure API key authorization: api_key
+$WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::VehicleRouteAvailabilitiesApi->new();
+my $apiKey = apiKey_example; # String | API key provided by freight exchange
+my $body = WWW::SwaggerClient::Object::VehicleRouteAvailabilities->new(); # VehicleRouteAvailabilities | List of vehicle route availability objects that needs to be sent to freight exchange
+
+eval { 
+    $api_instance->postVehicleRouteAvailabilities(apiKey => $apiKey, body => $body);
+};
+if ($@) {
+    warn "Exception when calling VehicleRouteAvailabilitiesApi->postVehicleRouteAvailabilities: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-VehicleRouteAvailabilities-postVehicleRouteAvailabilities-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: api_key
+swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.VehicleRouteAvailabilitiesApi()
+apiKey = apiKey_example # String | API key provided by freight exchange
+body =  # VehicleRouteAvailabilities | List of vehicle route availability objects that needs to be sent to freight exchange
+
+try: 
+    # Send availability of vehicles on specific routes
+    api_instance.post_vehicle_route_availabilities(apiKey, body)
+except ApiException as e:
+    print("Exception when calling VehicleRouteAvailabilitiesApi->postVehicleRouteAvailabilities: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">api_key*</td>
+<td>
+
+
+    <div id="d2e199_postVehicleRouteAvailabilities_apiKey">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description">
+                        API key provided by freight exchange
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
+<td>
+
+
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "in" : "body",
+  "name" : "body",
+  "description" : "List of vehicle route availability objects that needs to be sent to freight exchange",
+  "required" : true,
+  "schema" : {
+    "$ref" : "#/definitions/VehicleRouteAvailabilities"
+  }
+};
+  var schema = schemaWrapper.schema;
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_postVehicleRouteAvailabilities_body');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_postVehicleRouteAvailabilities_body"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Successfully sent </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 401 - Client unauthorized </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 403 - Access forbidden </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 405 - Invalid input </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 415 - Unsupported media type </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 429 - Too many requests </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal server error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 503 - Service unavailable due to a maintenance </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Vehicles">
+                  <h1>Vehicles</h1>
+                    <div id="api-Vehicles-deleteVehicle">
+                      <article id="api-Vehicles-deleteVehicle-0" data-group="User" data-name="deleteVehicle" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteVehicle</h1>
+                          <p>Deletes a vehicle</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This method should be used by DFF system, when the vehicle is no longer used.</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/vehicles/{vehicleId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Vehicles-deleteVehicle-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Vehicles-deleteVehicle-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Vehicles-deleteVehicle-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Vehicles-deleteVehicle-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Vehicles-deleteVehicle-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicles/{vehicleId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.VehiclesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class VehiclesApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        
+        // Configure API key authorization: api_key
+        ApiKeyAuth api_key = (ApiKeyAuth) defaultClient.getAuthentication("api_key");
+        api_key.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //api_key.setApiKeyPrefix("Token");
+
+        VehiclesApi apiInstance = new VehiclesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        String vehicleId = vehicleId_example; // String | Vehicle id to delete
+        try {
+            apiInstance.deleteVehicle(apiKey, vehicleId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehiclesApi#deleteVehicle");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehiclesApi;
+
+public class VehiclesApiExample {
+
+    public static void main(String[] args) {
+        VehiclesApi apiInstance = new VehiclesApi();
+        String apiKey = apiKey_example; // String | API key provided by freight exchange
+        String vehicleId = vehicleId_example; // String | Vehicle id to delete
+        try {
+            apiInstance.deleteVehicle(apiKey, vehicleId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehiclesApi#deleteVehicle");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
 
 // Configure API key authorization: (authentication scheme: api_key)
@@ -2106,7 +3787,7 @@ public class VehicleApiExample {
 String *apiKey = apiKey_example; // API key provided by freight exchange
 String *vehicleId = vehicleId_example; // Vehicle id to delete
 
-VehicleApi *apiInstance = [[VehicleApi alloc] init];
+VehiclesApi *apiInstance = [[VehiclesApi alloc] init];
 
 // Deletes a vehicle
 [apiInstance deleteVehicleWith:apiKey
@@ -2119,7 +3800,7 @@ VehicleApi *apiInstance = [[VehicleApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-javascript">
+                            <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
 var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
 
@@ -2129,7 +3810,7 @@ api_key.apiKey = "YOUR API KEY"
 // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
 //api_key.apiKeyPrefix['api_key'] = "Token"
 
-var api = new EuroWagDffFreightExchangePushApi.VehicleApi()
+var api = new EuroWagDffFreightExchangePushApi.VehiclesApi()
 
 var apiKey = apiKey_example; // {String} API key provided by freight exchange
 
@@ -2147,10 +3828,10 @@ api.deleteVehicle(apiKey, vehicleId, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-angular">
+                            <!--<div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-csharp">
+                            <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -2169,7 +3850,7 @@ namespace Example
             // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
             // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
 
-            var apiInstance = new VehicleApi();
+            var apiInstance = new VehiclesApi();
             var apiKey = apiKey_example;  // String | API key provided by freight exchange
             var vehicleId = vehicleId_example;  // String | Vehicle id to delete
 
@@ -2180,7 +3861,7 @@ namespace Example
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling VehicleApi.deleteVehicle: " + e.Message );
+                Debug.Print("Exception when calling VehiclesApi.deleteVehicle: " + e.Message );
             }
         }
     }
@@ -2188,7 +3869,7 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-php">
+                            <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -2197,29 +3878,29 @@ Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'Y
 // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 // Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
 
-$api_instance = new Swagger\Client\Api\VehicleApi();
+$api_instance = new Swagger\Client\Api\VehiclesApi();
 $apiKey = apiKey_example; // String | API key provided by freight exchange
 $vehicleId = vehicleId_example; // String | Vehicle id to delete
 
 try {
     $api_instance->deleteVehicle($apiKey, $vehicleId);
 } catch (Exception $e) {
-    echo 'Exception when calling VehicleApi->deleteVehicle: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling VehiclesApi->deleteVehicle: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-perl">
+                            <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::VehicleApi;
+use WWW::SwaggerClient::VehiclesApi;
 
 # Configure API key authorization: api_key
 $WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
 # uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 #$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
 
-my $api_instance = WWW::SwaggerClient::VehicleApi->new();
+my $api_instance = WWW::SwaggerClient::VehiclesApi->new();
 my $apiKey = apiKey_example; # String | API key provided by freight exchange
 my $vehicleId = vehicleId_example; # String | Vehicle id to delete
 
@@ -2227,11 +3908,11 @@ eval {
     $api_instance->deleteVehicle(apiKey => $apiKey, vehicleId => $vehicleId);
 };
 if ($@) {
-    warn "Exception when calling VehicleApi->deleteVehicle: $@\n";
+    warn "Exception when calling VehiclesApi->deleteVehicle: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Vehicle-deleteVehicle-0-python">
+                            <div class="tab-pane" id="examples-Vehicles-deleteVehicle-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -2244,7 +3925,7 @@ swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
 # swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
 
 # create an instance of the API class
-api_instance = swagger_client.VehicleApi()
+api_instance = swagger_client.VehiclesApi()
 apiKey = apiKey_example # String | API key provided by freight exchange
 vehicleId = vehicleId_example # String | Vehicle id to delete
 
@@ -2252,7 +3933,7 @@ try:
     # Deletes a vehicle
     api_instance.delete_vehicle(apiKey, vehicleId)
 except ApiException as e:
-    print("Exception when calling VehicleApi->deleteVehicle: %s\n" % e)</code></pre>
+    print("Exception when calling VehiclesApi->deleteVehicle: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
@@ -2407,813 +4088,6 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
-                  </section>
-                <section id="api-VehicleAvailabilities">
-                  <h1>VehicleAvailabilities</h1>
-                    <div id="api-VehicleAvailabilities-postVehicleAvailabilities">
-                      <article id="api-VehicleAvailabilities-postVehicleAvailabilities-0" data-group="User" data-name="postVehicleAvailabilities" data-version="0">
-                        <div class="pull-left">
-                          <h1>postVehicleAvailabilities</h1>
-                          <p>Send availability times and places of vehicles</p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked">This method should be used by DFF system to provide availability times and places of vehicles for freight exchange processing. Every change of vehicle&#x60;s availability times and/or places is pushed using this interface. There is no need to send the whole list everytime when availability changes. Existing availabilities should be updated and new availabilities should be added. Availabilities deleted before should be added again.</p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/vehicle-availabilities</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-java">Java</a></li>
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-VehicleAvailabilities-postVehicleAvailabilities-0-python">Python</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle-availabilities"</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.VehicleAvailabilitiesApi;
-
-import java.io.File;
-import java.util.*;
-
-public class VehicleAvailabilitiesApiExample {
-
-    public static void main(String[] args) {
-        ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
-        // Configure API key authorization: api_key
-        ApiKeyAuth api_key = (ApiKeyAuth) defaultClient.getAuthentication("api_key");
-        api_key.setApiKey("YOUR API KEY");
-        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-        //api_key.setApiKeyPrefix("Token");
-
-        VehicleAvailabilitiesApi apiInstance = new VehicleAvailabilitiesApi();
-        String apiKey = apiKey_example; // String | API key provided by freight exchange
-        VehicleAvailabilities body = ; // VehicleAvailabilities | List of vehicle availability objects that needs to be sent to freight exchange
-        try {
-            apiInstance.postVehicleAvailabilities(apiKey, body);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling VehicleAvailabilitiesApi#postVehicleAvailabilities");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehicleAvailabilitiesApi;
-
-public class VehicleAvailabilitiesApiExample {
-
-    public static void main(String[] args) {
-        VehicleAvailabilitiesApi apiInstance = new VehicleAvailabilitiesApi();
-        String apiKey = apiKey_example; // String | API key provided by freight exchange
-        VehicleAvailabilities body = ; // VehicleAvailabilities | List of vehicle availability objects that needs to be sent to freight exchange
-        try {
-            apiInstance.postVehicleAvailabilities(apiKey, body);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling VehicleAvailabilitiesApi#postVehicleAvailabilities");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
-// Configure API key authorization: (authentication scheme: api_key)
-[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"api_key"];
-// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
-
-String *apiKey = apiKey_example; // API key provided by freight exchange
-VehicleAvailabilities *body = ; // List of vehicle availability objects that needs to be sent to freight exchange
-
-VehicleAvailabilitiesApi *apiInstance = [[VehicleAvailabilitiesApi alloc] init];
-
-// Send availability times and places of vehicles
-[apiInstance postVehicleAvailabilitiesWith:apiKey
-    body:body
-              completionHandler: ^(NSError* error) {
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
-var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
-
-// Configure API key authorization: api_key
-var api_key = defaultClient.authentications['api_key'];
-api_key.apiKey = "YOUR API KEY"
-// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-//api_key.apiKeyPrefix['api_key'] = "Token"
-
-var api = new EuroWagDffFreightExchangePushApi.VehicleAvailabilitiesApi()
-
-var apiKey = apiKey_example; // {String} API key provided by freight exchange
-
-var body = ; // {VehicleAvailabilities} List of vehicle availability objects that needs to be sent to freight exchange
-
-
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully.');
-  }
-};
-api.postVehicleAvailabilities(apiKey, body, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class postVehicleAvailabilitiesExample
-    {
-        public void main()
-        {
-            
-            // Configure API key authorization: api_key
-            Configuration.Default.ApiKey.Add("api_key", "YOUR_API_KEY");
-            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-            // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
-
-            var apiInstance = new VehicleAvailabilitiesApi();
-            var apiKey = apiKey_example;  // String | API key provided by freight exchange
-            var body = new VehicleAvailabilities(); // VehicleAvailabilities | List of vehicle availability objects that needs to be sent to freight exchange
-
-            try
-            {
-                // Send availability times and places of vehicles
-                apiInstance.postVehicleAvailabilities(apiKey, body);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling VehicleAvailabilitiesApi.postVehicleAvailabilities: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-// Configure API key authorization: api_key
-Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'YOUR_API_KEY');
-// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
-
-$api_instance = new Swagger\Client\Api\VehicleAvailabilitiesApi();
-$apiKey = apiKey_example; // String | API key provided by freight exchange
-$body = ; // VehicleAvailabilities | List of vehicle availability objects that needs to be sent to freight exchange
-
-try {
-    $api_instance->postVehicleAvailabilities($apiKey, $body);
-} catch (Exception $e) {
-    echo 'Exception when calling VehicleAvailabilitiesApi->postVehicleAvailabilities: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::VehicleAvailabilitiesApi;
-
-# Configure API key authorization: api_key
-$WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
-# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-#$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
-
-my $api_instance = WWW::SwaggerClient::VehicleAvailabilitiesApi->new();
-my $apiKey = apiKey_example; # String | API key provided by freight exchange
-my $body = WWW::SwaggerClient::Object::VehicleAvailabilities->new(); # VehicleAvailabilities | List of vehicle availability objects that needs to be sent to freight exchange
-
-eval { 
-    $api_instance->postVehicleAvailabilities(apiKey => $apiKey, body => $body);
-};
-if ($@) {
-    warn "Exception when calling VehicleAvailabilitiesApi->postVehicleAvailabilities: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailabilities-postVehicleAvailabilities-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# Configure API key authorization: api_key
-swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
-
-# create an instance of the API class
-api_instance = swagger_client.VehicleAvailabilitiesApi()
-apiKey = apiKey_example # String | API key provided by freight exchange
-body =  # VehicleAvailabilities | List of vehicle availability objects that needs to be sent to freight exchange
-
-try: 
-    # Send availability times and places of vehicles
-    api_instance.post_vehicle_availabilities(apiKey, body)
-except ApiException as e:
-    print("Exception when calling VehicleAvailabilitiesApi->postVehicleAvailabilities: %s\n" % e)</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Parameters</h2>
-
-
-                            <div class="methodsubtabletitle">Header parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                  <tr><td style="width:150px;">api_key*</td>
-<td>
-
-
-    <div id="d2e199_postVehicleAvailabilities_apiKey">
-        <div class="json-schema-view">
-            <div class="primitive">
-                <span class="type">
-                    String
-                </span>
-
-                    <div class="inner description">
-                        API key provided by freight exchange
-                    </div>
-            </div>
-                <div class="inner required">
-                    Required
-                </div>
-        </div>
-    </div>
-</td>
-</tr>
-
-                            </table>
-
-                            <div class="methodsubtabletitle">Body parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
-<td>
-
-
-<script>
-$(document).ready(function() {
-  var schemaWrapper = {
-  "in" : "body",
-  "name" : "body",
-  "description" : "List of vehicle availability objects that needs to be sent to freight exchange",
-  "required" : true,
-  "schema" : {
-    "$ref" : "#/definitions/VehicleAvailabilities"
-  }
-};
-  var schema = schemaWrapper.schema;
-  if (schema.$ref != null) {
-    schema = defsParser.$refs.get(schema.$ref);
-  } else {
-    schemaWrapper.definitions = Object.assign({}, defs);
-    $RefParser.dereference(schemaWrapper).catch(function(err) {
-      console.log(err);
-    });
-  }
-
-  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_postVehicleAvailabilities_body');
-  result.empty();
-  result.append(view.render());
-});
-</script>
-<div id="d2e199_postVehicleAvailabilities_body"></div>
-</td>
-</tr>
-
-                            </table>
-
-
-
-                          <h2>Responses</h2>
-                            <h3> Status: 200 - Successfully sent </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 401 - Client unauthorized </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 403 - Access forbidden </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 405 - Invalid input </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 415 - Unsupported media type </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 429 - Too many requests </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 500 - Internal server error </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 503 - Service unavailable due to a maintenance </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                        </article>
-                      </div>
-                      <hr>
-                  </section>
-                <section id="api-VehicleAvailability">
-                  <h1>VehicleAvailability</h1>
-                    <div id="api-VehicleAvailability-deleteVehicleAvailability">
-                      <article id="api-VehicleAvailability-deleteVehicleAvailability-0" data-group="User" data-name="deleteVehicleAvailability" data-version="0">
-                        <div class="pull-left">
-                          <h1>deleteVehicleAvailability</h1>
-                          <p>Deletes a vehicle availability record</p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked">This method should be used by DFF system, when the vehicle is no longer available.</p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/vehicle-availability/{vehicleAvailabilityId}</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-java">Java</a></li>
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-VehicleAvailability-deleteVehicleAvailability-0-python">Python</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-VehicleAvailability-deleteVehicleAvailability-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "api_key: [[apiKey]]" "https://freight-exchange.example.com/dff-api/v1/vehicle-availability/{vehicleAvailabilityId}"</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.VehicleAvailabilityApi;
-
-import java.io.File;
-import java.util.*;
-
-public class VehicleAvailabilityApiExample {
-
-    public static void main(String[] args) {
-        ApiClient defaultClient = Configuration.getDefaultApiClient();
-        
-        // Configure API key authorization: api_key
-        ApiKeyAuth api_key = (ApiKeyAuth) defaultClient.getAuthentication("api_key");
-        api_key.setApiKey("YOUR API KEY");
-        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-        //api_key.setApiKeyPrefix("Token");
-
-        VehicleAvailabilityApi apiInstance = new VehicleAvailabilityApi();
-        String apiKey = apiKey_example; // String | API key provided by freight exchange
-        String vehicleAvailabilityId = vehicleAvailabilityId_example; // String | Vehicle availability id to delete
-        try {
-            apiInstance.deleteVehicleAvailability(apiKey, vehicleAvailabilityId);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling VehicleAvailabilityApi#deleteVehicleAvailability");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehicleAvailabilityApi;
-
-public class VehicleAvailabilityApiExample {
-
-    public static void main(String[] args) {
-        VehicleAvailabilityApi apiInstance = new VehicleAvailabilityApi();
-        String apiKey = apiKey_example; // String | API key provided by freight exchange
-        String vehicleAvailabilityId = vehicleAvailabilityId_example; // String | Vehicle availability id to delete
-        try {
-            apiInstance.deleteVehicleAvailability(apiKey, vehicleAvailabilityId);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling VehicleAvailabilityApi#deleteVehicleAvailability");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
-
-// Configure API key authorization: (authentication scheme: api_key)
-[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"api_key"];
-// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"api_key"];
-
-String *apiKey = apiKey_example; // API key provided by freight exchange
-String *vehicleAvailabilityId = vehicleAvailabilityId_example; // Vehicle availability id to delete
-
-VehicleAvailabilityApi *apiInstance = [[VehicleAvailabilityApi alloc] init];
-
-// Deletes a vehicle availability record
-[apiInstance deleteVehicleAvailabilityWith:apiKey
-    vehicleAvailabilityId:vehicleAvailabilityId
-              completionHandler: ^(NSError* error) {
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var EuroWagDffFreightExchangePushApi = require('euro_wag_dff___freight_exchange_push_api');
-var defaultClient = EuroWagDffFreightExchangePushApi.ApiClient.instance;
-
-// Configure API key authorization: api_key
-var api_key = defaultClient.authentications['api_key'];
-api_key.apiKey = "YOUR API KEY"
-// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-//api_key.apiKeyPrefix['api_key'] = "Token"
-
-var api = new EuroWagDffFreightExchangePushApi.VehicleAvailabilityApi()
-
-var apiKey = apiKey_example; // {String} API key provided by freight exchange
-
-var vehicleAvailabilityId = vehicleAvailabilityId_example; // {String} Vehicle availability id to delete
-
-
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully.');
-  }
-};
-api.deleteVehicleAvailability(apiKey, vehicleAvailabilityId, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class deleteVehicleAvailabilityExample
-    {
-        public void main()
-        {
-            
-            // Configure API key authorization: api_key
-            Configuration.Default.ApiKey.Add("api_key", "YOUR_API_KEY");
-            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-            // Configuration.Default.ApiKeyPrefix.Add("api_key", "Bearer");
-
-            var apiInstance = new VehicleAvailabilityApi();
-            var apiKey = apiKey_example;  // String | API key provided by freight exchange
-            var vehicleAvailabilityId = vehicleAvailabilityId_example;  // String | Vehicle availability id to delete
-
-            try
-            {
-                // Deletes a vehicle availability record
-                apiInstance.deleteVehicleAvailability(apiKey, vehicleAvailabilityId);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling VehicleAvailabilityApi.deleteVehicleAvailability: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-// Configure API key authorization: api_key
-Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('api_key', 'YOUR_API_KEY');
-// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('api_key', 'Bearer');
-
-$api_instance = new Swagger\Client\Api\VehicleAvailabilityApi();
-$apiKey = apiKey_example; // String | API key provided by freight exchange
-$vehicleAvailabilityId = vehicleAvailabilityId_example; // String | Vehicle availability id to delete
-
-try {
-    $api_instance->deleteVehicleAvailability($apiKey, $vehicleAvailabilityId);
-} catch (Exception $e) {
-    echo 'Exception when calling VehicleAvailabilityApi->deleteVehicleAvailability: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::VehicleAvailabilityApi;
-
-# Configure API key authorization: api_key
-$WWW::SwaggerClient::Configuration::api_key->{'api_key'} = 'YOUR_API_KEY';
-# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-#$WWW::SwaggerClient::Configuration::api_key_prefix->{'api_key'} = "Bearer";
-
-my $api_instance = WWW::SwaggerClient::VehicleAvailabilityApi->new();
-my $apiKey = apiKey_example; # String | API key provided by freight exchange
-my $vehicleAvailabilityId = vehicleAvailabilityId_example; # String | Vehicle availability id to delete
-
-eval { 
-    $api_instance->deleteVehicleAvailability(apiKey => $apiKey, vehicleAvailabilityId => $vehicleAvailabilityId);
-};
-if ($@) {
-    warn "Exception when calling VehicleAvailabilityApi->deleteVehicleAvailability: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-VehicleAvailability-deleteVehicleAvailability-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# Configure API key authorization: api_key
-swagger_client.configuration.api_key['api_key'] = 'YOUR_API_KEY'
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# swagger_client.configuration.api_key_prefix['api_key'] = 'Bearer'
-
-# create an instance of the API class
-api_instance = swagger_client.VehicleAvailabilityApi()
-apiKey = apiKey_example # String | API key provided by freight exchange
-vehicleAvailabilityId = vehicleAvailabilityId_example # String | Vehicle availability id to delete
-
-try: 
-    # Deletes a vehicle availability record
-    api_instance.delete_vehicle_availability(apiKey, vehicleAvailabilityId)
-except ApiException as e:
-    print("Exception when calling VehicleAvailabilityApi->deleteVehicleAvailability: %s\n" % e)</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Parameters</h2>
-
-                            <div class="methodsubtabletitle">Path parameters</div>
-                            <table id="methodsubtable">
-                                <tr>
-                                  <th width="150px">Name</th>
-                                  <th>Description</th>
-                                </tr>
-                                  <tr><td style="width:150px;">vehicleAvailabilityId*</td>
-<td>
-
-
-    <div id="d2e199_deleteVehicleAvailability_vehicleAvailabilityId">
-        <div class="json-schema-view">
-            <div class="primitive">
-                <span class="type">
-                    String
-                </span>
-
-                    <div class="inner description">
-                        Vehicle availability id to delete
-                    </div>
-            </div>
-                <div class="inner required">
-                    Required
-                </div>
-        </div>
-    </div>
-</td>
-</tr>
-
-                            </table>
-
-                            <div class="methodsubtabletitle">Header parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                  <tr><td style="width:150px;">api_key*</td>
-<td>
-
-
-    <div id="d2e199_deleteVehicleAvailability_apiKey">
-        <div class="json-schema-view">
-            <div class="primitive">
-                <span class="type">
-                    String
-                </span>
-
-                    <div class="inner description">
-                        API key provided by freight exchange
-                    </div>
-            </div>
-                <div class="inner required">
-                    Required
-                </div>
-        </div>
-    </div>
-</td>
-</tr>
-
-                            </table>
-
-
-
-
-                          <h2>Responses</h2>
-                            <h3> Status: 200 - Successfully deleted </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 400 - Invalid ID supplied </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 401 - Client unauthorized </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 403 - Access forbidden </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 404 - Entity not found </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 405 - Invalid input </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 415 - Unsupported media type </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 429 - Too many requests </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 500 - Internal server error </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 503 - Service unavailable due to a maintenance </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                        </article>
-                      </div>
-                      <hr>
-                  </section>
-                <section id="api-Vehicles">
-                  <h1>Vehicles</h1>
                     <div id="api-Vehicles-postVehicles">
                       <article id="api-Vehicles-postVehicles-0" data-group="User" data-name="postVehicles" data-version="0">
                         <div class="pull-left">
@@ -3625,7 +4499,7 @@ $(document).ready(function() {
           </div>
           <div id="generator">
             <div class="content">
-              Generated 2018-09-13T07:34:49.333Z
+              Generated 2018-09-14T06:58:24.766Z
             </div>
           </div>
       </div>
